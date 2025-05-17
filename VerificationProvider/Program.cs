@@ -1,13 +1,16 @@
+using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using VerificationProvider.Services;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.ConfigureFunctionsWebApplication();
 
-// Application Insights isn't enabled by default. See https://aka.ms/AAt8mw4.
-// builder.Services
-//     .AddApplicationInsightsTelemetryWorkerService()
-//     .ConfigureFunctionsApplicationInsights();
+var serviceBus = builder.Configuration["ServiceBus"] ?? throw new InvalidOperationException();
+builder.Services.AddSingleton(_ => new ServiceBusClient(serviceBus));
+
+builder.Services.AddSingleton<VerificationService>();
 
 builder.Build().Run();

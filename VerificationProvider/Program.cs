@@ -8,9 +8,6 @@ var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.ConfigureFunctionsWebApplication();
 
-var serviceBus = builder.Configuration["ServiceBus"] ?? throw new InvalidOperationException();
-builder.Services.AddSingleton(_ => new ServiceBusClient(serviceBus));
-
 builder.Services.AddSingleton<VerificationService>();
 
 builder.Build().Run();

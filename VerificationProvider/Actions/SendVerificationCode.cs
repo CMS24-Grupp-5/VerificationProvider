@@ -6,12 +6,12 @@ using VerificationProvider.Services;
 
 namespace VerificationProvider.Actions;
 
-public class VerificationCodeTrigger(ILogger<VerificationCodeTrigger> logger, VerificationService verificationService)
+public class SendVerificationCode(ILogger<SendVerificationCode> logger, VerificationService verificationService)
 {
-    private readonly ILogger<VerificationCodeTrigger> _logger = logger;
+    private readonly ILogger<SendVerificationCode> _logger = logger;
     private readonly VerificationService _verificationService = verificationService;
 
-    [Function(nameof(VerificationCodeTrigger))]
+    [Function(nameof(SendVerificationCode))]
     [ServiceBusOutput("emailservice", Connection = "ServiceBus")]
     public async Task<string?> Run(
         [ServiceBusTrigger("verificationcode", Connection = "ServiceBus")] ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions)

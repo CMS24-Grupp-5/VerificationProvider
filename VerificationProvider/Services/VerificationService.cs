@@ -15,9 +15,9 @@ public class VerificationService
         var emailMessage = new SendEmailModel
         {
             Recipients = _emailList,
-            Subject = $"Here is your verification code",
-            PlainText = $"Your verification code is {randomCode}",
-            Html = $"<html><body><h1><div>Your verification code is:</div><div>{randomCode}</div></h1></body></html>"
+            Subject = $"Ventixe - Verify your email",
+            PlainText = $"Your email verification code is: {randomCode}",
+            Html = $"<html><body><h1><div>Your email verification code is:</div><div>{randomCode}</div></h1></body></html>"
         };
         return emailMessage;
     }

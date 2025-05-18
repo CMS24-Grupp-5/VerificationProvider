@@ -13,7 +13,7 @@ public class VerificationCodeTrigger(ILogger<VerificationCodeTrigger> logger, Ve
 
     [Function(nameof(VerificationCodeTrigger))]
     [ServiceBusOutput("emailservice", Connection = "ServiceBus")]
-    public async Task<string> Run(
+    public async Task<string?> Run(
         [ServiceBusTrigger("verificationcode", Connection = "ServiceBus")] ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions)
     {
         var email = message.Body.ToString();
@@ -28,6 +28,6 @@ public class VerificationCodeTrigger(ILogger<VerificationCodeTrigger> logger, Ve
         
         _logger.LogWarning("No email was received.");
         await messageActions.DeadLetterMessageAsync(message, new Dictionary<string, object>{{"Reason", "No email address was received."}});
-        return String.Empty;
+        return null;
     }
 }

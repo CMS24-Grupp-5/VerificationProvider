@@ -20,7 +20,13 @@ public class SendVerificationCode(ILogger<SendVerificationCode> logger, Verifica
         
         if (!String.IsNullOrEmpty(email))
         {
-            var emailMessage = _verificationService.CreateVerificationEmail(email);
+            var emailMessage = await _verificationService.CreateVerificationEmail(email);
+            
+            if (emailMessage == null)
+            {
+                await messageActions.DeadLetterMessageAsync(message, new Dictionary<string, object> { { "Reason", "There was an error with the database." } });
+            }
+            
             await messageActions.CompleteMessageAsync(message);
 
             return JsonSerializer.Serialize(emailMessage);

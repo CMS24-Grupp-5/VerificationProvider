@@ -1,7 +1,5 @@
-using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using VerificationProvider.Data;
@@ -11,7 +9,9 @@ var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.ConfigureFunctionsWebApplication();
 
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlite("Data Source=project.db"));
+var connectionString = Environment.GetEnvironmentVariable("SqlServerConnectionString");
+
+builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(connectionString));
 builder.Services.AddSingleton<VerificationService>();
 
 builder.Build().Run();

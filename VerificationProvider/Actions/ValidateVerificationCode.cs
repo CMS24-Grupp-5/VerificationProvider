@@ -4,27 +4,38 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VerificationProvider.Models;
+using VerificationProvider.Services;
 
 namespace VerificationProvider.Actions;
 
 public class ValidateVerificationCode
 {
     private readonly ILogger<ValidateVerificationCode> _logger;
+    private readonly VerificationService _verificationService;
 
-    public ValidateVerificationCode(ILogger<ValidateVerificationCode> logger)
+    public ValidateVerificationCode(ILogger<ValidateVerificationCode> logger, VerificationService verificationService)
     {
         _logger = logger;
+        _verificationService = verificationService;
     }
 
     [Function("ValidateVerificationCode")]
-    public IActionResult Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
+    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
     {
-        var body = new StreamReader(req.Body).ReadToEnd();
+        var body = await new StreamReader(req.Body).ReadToEndAsync();
         var verificationRequest = JsonConvert.DeserializeObject<ValidateCodeRequest>(body);
+
+        if (verificationRequest == null)
+        {
+            _logger.LogError("Some error occured with the post.");
+            return new BadRequestResult();
+        }
         
-        _logger.LogInformation("C# HTTP trigger function processed a request.");
-        return new OkObjectResult("Welcome to Azure Functions!");
-        
+        var result = await _verificationService.ValidateCodeAsync(verificationRequest);
+
+        return result
+            ? new OkObjectResult(new { message = "Code is accurate" })
+            : new UnauthorizedObjectResult(new { message = "Code is invalid or expired" });
     }
 
 }

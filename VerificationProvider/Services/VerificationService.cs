@@ -52,7 +52,7 @@ public class VerificationService(DataContext context)
 
         if (!result.IsNullOrEmpty())
         {
-            _context.Remove(result);
+            _context.RemoveRange(result);
             await _context.SaveChangesAsync();
             return true;
         }

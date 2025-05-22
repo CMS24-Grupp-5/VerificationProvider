@@ -9,17 +9,12 @@ namespace VerificationProvider.Services;
 public class VerificationService(DataContext context)
 {
     private readonly DataContext _context = context;
-    private readonly List<string> _emailList = [];
-    
     public async Task<SendEmailModel?> CreateVerificationEmail(string email)
     {
-        _emailList.Add(email);
         
         var randomCode = GenerateVerificationCode();
         var emailMessage = MapVerificationEmail(email, randomCode);
         var saveCodeResult = await SaveCodeInDatabaseAsync(email, randomCode);
-        
-        _emailList.Remove(email);
         
         if (saveCodeResult == false)
         {
@@ -64,9 +59,11 @@ public class VerificationService(DataContext context)
     
     private SendEmailModel MapVerificationEmail(string email, string code)
     {
+        List<string> emailList = [email];
+        
         var emailMessage = new SendEmailModel
         {
-            Recipients = _emailList,
+            Recipients = emailList,
             Subject = $"Ventixe - Verify your email",
             PlainText = $"Your email verification code is: {code}",
             Html = $"<html><body><h1><div>Your email verification code is:</div><div>{code}</div></h1><h2><div>The code is valid for 5 minutes.</div></h2></body></html>"

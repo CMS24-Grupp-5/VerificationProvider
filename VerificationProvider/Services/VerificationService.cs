@@ -18,7 +18,9 @@ public class VerificationService(DataContext context)
         var randomCode = GenerateVerificationCode();
         var emailMessage = MapVerificationEmail(email, randomCode);
         var saveCodeResult = await SaveCodeInDatabaseAsync(email, randomCode);
-
+        
+        _emailList.Remove(email);
+        
         if (saveCodeResult == false)
         {
             return null;
